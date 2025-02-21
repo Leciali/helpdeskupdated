@@ -30,23 +30,23 @@
     <ul class="mt-4 space-y-1">
       <li class="flex items-center px-3 py-1.5 hover:bg-gray-800 rounded cursor-pointer">
         <i class="fas fa-users text-xs text-gray-400"></i>
-        <span class="ml-2 text-sm">All Tickets</span>
+        <span class="ml-2 text-sm font-light">All Tickets</span>
       </li>
-      <li class="flex items-center px-3 py-1.5 hover:bg-blue-800 rounded cursor-pointer">
+      <li class="flex items-center px-3 py-1.5 hover:bg-blue-900 rounded cursor-pointer">
         <i class="fas fa-folder-open text-xs text-gray-400"></i>
-        <span class="ml-2 text-sm">Open</span>
+        <span class="ml-2 text-sm font-light">Open</span>
       </li>
-      <li class="flex items-center px-3 py-1.5 hover:bg-yellow-800 rounded cursor-pointer">
+      <li class="flex items-center px-3 py-1.5 hover:bg-yellow-900 rounded cursor-pointer">
         <i class="fas fa-clock text-xs text-gray-400"></i>
-        <span class="ml-2 text-sm">Pending</span>
+        <span class="ml-2 text-sm font-light">Pending</span>
       </li>
-      <li class="flex items-center px-3 py-1.5 hover:bg-green-800 rounded cursor-pointer">
+      <li class="flex items-center px-3 py-1.5 hover:bg-green-900 rounded cursor-pointer">
         <i class="fas fa-check text-xs"></i>
-        <span class="ml-2 text-sm">Solved</span>
+        <span class="ml-2 text-sm font-light">Solved</span>
       </li>
-      <li class="flex items-center px-3 py-1.5 hover:bg-red-800 rounded cursor-pointer">
+      <li class="flex items-center px-3 py-1.5 hover:bg-red-900 rounded cursor-pointer">
         <i class="fas fa-times text-xs text-gray-400"></i>
-        <span class="ml-2 text-sm">Closed</span>
+        <span class="ml-2 text-sm font-light">Closed</span>
       </li>
     </ul>
   
@@ -60,8 +60,8 @@
    <!-- Content (masih wadah belum ada fitur) -->
    <div class="flex-grow flex flex-col">
     <div class="flex items-center justify-between bg-white p-4 border-b border-gray-200">
-     <h1 class="text-xl font-semibold">All Tickets</h1>
-     <button class="bg-blue-500 text-white px-4 py-2 rounded">+ New ticket</button>
+     <h1 class="text-xl font-light">All Tickets</h1>
+     <button class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded">+ New Ticket</button>
     </div>
    </div>
   </div>
