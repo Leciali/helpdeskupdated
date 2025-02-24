@@ -10,4 +10,16 @@ class DashboardController extends Controller
     public function dashboardview(){
         return view('indexDashboard');
     }
+
+    function openticketview(){
+        return view('indexOpenTicket');
+    }
+
+    function pendingticketview(){
+        return view('indexPendingTicket');
+    }
+
+    function solvedticketview(){
+        return view('indexSolvedTicket');
+    }
 }

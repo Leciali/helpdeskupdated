@@ -12,5 +12,8 @@ Route::middleware(["guest"])->group(function () {
 
 Route::middleware(["auth"])->group(function () {
     Route::get('/dashboard', [DashboardController::class, "dashboardview"]) -> name('user.dashboard');
+    Route::get('/open-ticket',[DashboardController::class,"openticketview"])-> name('user.open-ticket');
+    Route::get('/pending-ticket',[DashboardController::class, "pendingticketview"]) -> name('user.pending-ticket');
+    Route::get('/solved-ticket',[DashboardController::class, "solvedticketview"]) -> name('user.solved-ticket');
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
 });
