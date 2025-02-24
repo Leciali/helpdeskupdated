@@ -12,10 +12,10 @@ class SessionController extends Controller
         return view('indexLoginPage'); 
     }
 
-    // Proses login
+    // Session
     public function login(Request $request)
     {
-        // Validasi input
+
         $credentials = $request->validate([
             'email' => 'required|email', 
             'password' => 'required',
@@ -26,24 +26,19 @@ class SessionController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-        // Jika autentikasi gagal, kembali ke halaman login dengan pesan error
+     
         return back()->withErrors([
             'email' => 'Email yang Anda masukkan salah.',
             'password' => 'Password yang Anda masukkan salah'
         ])->onlyInput('Email');
     }
 
-    // Proses logout
+    // Logout
     public function logout(Request $request)
     {
         Auth::logout();
-
-        // Invalidate session
         $request->session()->invalidate();
-
-        // Regenerasi token CSRF
         $request->session()->regenerateToken();
-
         return redirect('/');
     }
 }
