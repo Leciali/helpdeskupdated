@@ -44,7 +44,7 @@
         <!-- Content -->
         <div class="flex-grow flex flex-col">
             <div class="flex items-center justify-between bg-white p-4 border-b border-gray-200">
-                <h1 class="text-xl font-semibold">Pending Tickets</h1>
+                <h1 class="text-xl font-semibold">Report</h1>
                 <div class="flex space-x-2">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -72,7 +72,7 @@
                             <tr class="border-t">
                                 <td class="p-2">1</td>
                                 <td class="p-2">Printer</td>
-                                <td class="p-2 text-yellow-600">Pending</td>
+                                <td class="p-2 text-green-600">Solved</td>
                                 <td class="p-2 text-red-500">High</td>
                                 <td class="p-2">
                                     <button class="bg-blue-500 text-white px-2 py-1 text-xs rounded">View</button>
@@ -81,7 +81,7 @@
                             <tr class="border-t">
                                 <td class="p-2">2</td>
                                 <td class="p-2">Laptop ASUS</td>
-                                <td class="p-2 text-yellow-600">Pending</td>
+                                <td class="p-2 text-green-600">Solved</td>
                                 <td class="p-2 text-yellow-500">Medium</td>
                                 <td class="p-2">
                                     <button class="bg-blue-500 text-white px-2 py-1 text-xs rounded">View</button>

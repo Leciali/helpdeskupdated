@@ -41,7 +41,7 @@
                 </li>
                 <li class="flex items-center px-3 py-1.5 hover:bg-red-900 rounded cursor-pointer">
                   <i class="fas fa-times text-xs text-gray-400"></i>
-                  <span class="ml-2 text-sm font-light">Report</span>
+                  <a href="{{ route('user.report') }}" class="ml-2 text-sm font-light">Report</a>
                 </li>
               </ul>
 
