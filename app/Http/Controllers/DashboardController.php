@@ -22,4 +22,8 @@ class DashboardController extends Controller
     function solvedticketview(){
         return view('indexSolvedTicket');
     }
+
+    function reportview(){
+        return view ('indexReport');
+    }
 }
