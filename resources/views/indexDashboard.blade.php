@@ -144,13 +144,14 @@
         </button>
         <h1 class="text-xl font-semibold">All Tickets</h1>
       </div>
-
+            
       <div class="flex space-x-2">
-        <!-- Tombol New Ticket -->
-        <button class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded">
-          + New Ticket
-        </button>
+        <!-- Tombol New Ticket jika diperlukan -->
+          <a href="{{ route('user.open-ticket') }}" class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded flex items-center">
+              <span class="mr-1">+</span> New Ticket
+          </a>
       </div>
+      
     </div>
     <!-- Area konten utama -->
     <div class="p-4">
