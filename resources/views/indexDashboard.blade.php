@@ -114,10 +114,13 @@
     <div class="mt-auto">
       <!-- Tombol Logout -->
       <div class="px-3 py-2">
-        <a href="{{ route('logout') }}" class="w-full flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded transition duration-200 text-sm">
-          <i class="fas fa-sign-out-alt text-sm"></i>
-          <span>Logout</span>
-        </a>
+        <form action="{{ route('logout') }}" method="POST">
+          @csrf
+          <button type="submit" class="w-full flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded transition duration-200 text-sm">
+            <i class="fas fa-sign-out-alt text-sm"></i>
+            <span>Logout</span>
+          </button>
+        </form>
       </div>
       
       <!-- PROFIL -->
