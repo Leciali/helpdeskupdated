@@ -79,7 +79,7 @@
     <!-- LIST MENU (Gunakan flex-grow agar profil terdorong ke bawah) -->
     <ul class="mt-2 space-y-0 flex-grow px-2">
         <li>
-            <a href="{{ route('user.dashboard') }}" class="menu-item py-2">
+            <a href="{{ route('user.dashboard') }}" class="menu-item py-2 bg-blue-800">
                 <i class="fas fa-ticket-alt text-white text-sm"></i>
                 <span class="ml-2 text-sm font-medium">All Tickets</span>
             </a>
@@ -103,11 +103,11 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('user.report') }}" class="menu-item py-2">
-                <i class="fas fa-times text-white text-sm"></i>
-                <span class="ml-2 text-sm font-medium">Report</span>
-            </a>
-        </li>
+          <a href="{{ route('user.report') }}" class="menu-item py-2">
+              <i class="fas fa-chart-pie text-white text-sm"></i>
+              <span class="ml-2 text-sm font-medium">Report</span>
+          </a>
+      </li>
     </ul>
 
     <!-- Tombol Logout dan profil -->

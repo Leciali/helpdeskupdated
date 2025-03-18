@@ -82,7 +82,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('user.open-ticket') }}" class="menu-item py-2">
+                    <a href="{{ route('user.open-ticket') }}" class="menu-item py-2 bg-blue-800">
                         <i class="fas fa-folder-open text-white text-sm"></i>
                         <span class="ml-2 text-sm font-medium">Open</span>
                     </a>
@@ -101,7 +101,7 @@
                 </li>
                 <li>
                     <a href="{{ route('user.report') }}" class="menu-item py-2">
-                        <i class="fas fa-times text-white text-sm"></i>
+                        <i class="fas fa-chart-pie text-white text-sm"></i>
                         <span class="ml-2 text-sm font-medium">Report</span>
                     </a>
                 </li>
