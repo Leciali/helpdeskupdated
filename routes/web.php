@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\TicketController;
 
 Route::middleware(["guest"])->group(function () {
     Route::get("/", [SessionController::class, "loginpage"])->name('loginpage');
@@ -11,10 +12,19 @@ Route::middleware(["guest"])->group(function () {
 
 
 Route::middleware(["auth"])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, "dashboardview"]) -> name('user.dashboard');
-    Route::get('/open-ticket',[DashboardController::class,"openticketview"])-> name('user.open-ticket');
-    Route::get('/pending-ticket',[DashboardController::class, "pendingticketview"]) -> name('user.pending-ticket');
-    Route::get('/solved-ticket',[DashboardController::class, "solvedticketview"]) -> name('user.solved-ticket');
-    Route::get('/report', [DashboardController::class, 'reportview']) -> name('user.report');
+    Route::get('/dashboard', [TicketController::class, "dashboardView"]) -> name('user.dashboard');
+    Route::get('/open-ticket', [TicketController::class, "openTicketView"]) -> name('user.open-ticket');
+    Route::get('/pending-ticket', [TicketController::class, "pendingTicketView"]) -> name('user.pending-ticket');
+    Route::get('/solved-ticket', [TicketController::class, "solvedTicketView"]) -> name('user.solved-ticket');
+    Route::get('/report', [TicketController::class, 'reportView']) -> name('user.report');
+    
+    // Route untuk membuat tiket baru
+    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    
+    // Route untuk update status tiket
+    Route::patch('/tickets/{id}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
+    
+    // Route logout
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
 });
