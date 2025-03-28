@@ -58,6 +58,40 @@
           width: 18px;
           text-align: center;
         }
+
+        /* Tab styling */
+        .tab-active {
+          color: #0078d4;
+          border-bottom: 2px solid #0078d4;
+        }
+
+        /* Chart styling */
+        .chart-container {
+          height: 200px;
+          position: relative;
+        }
+        .bar {
+          position: absolute;
+          bottom: 40px;
+          width: 24px;
+          background-color: #0078d4;
+          border-radius: 4px 4px 0 0;
+        }
+        .bar-label {
+          position: absolute;
+          bottom: 20px;
+          font-size: 12px;
+          text-align: center;
+          width: 24px;
+        }
+        .bar-value {
+          position: absolute;
+          bottom: 100%;
+          font-size: 12px;
+          text-align: center;
+          width: 24px;
+          margin-bottom: 4px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -101,7 +135,7 @@
                 </li>
                 <li>
                     <a href="{{ route('user.report') }}" class="menu-item py-2 bg-blue-800">
-                        <i class="fas fa-times text-white text-sm"></i>
+                        <i class="fas fa-chart-bar text-white text-sm"></i>
                         <span class="ml-2 text-sm font-medium">Report</span>
                     </a>
                 </li>
@@ -149,40 +183,131 @@
                 </div>
             </div>
 
-            <!-- Table -->
+            <!-- Tab Navigation -->
+            <div class="border-b border-gray-200 bg-white">
+                <div class="flex px-6">
+                    <button class="py-4 px-4 font-medium text-sm tab-active">Resume Bulanan</button>
+                    <button class="py-4 px-4 font-medium text-sm text-gray-500">Resume Personal</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
             <div class="p-4">
-                <div class="bg-white shadow-md rounded-lg p-4">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-200">
-                                <th class="p-2">#</th>
-                                <th class="p-2">Subject</th>
-                                <th class="p-2">Status</th>
-                                <th class="p-2">Priority</th>
-                                <th class="p-2">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-t">
-                                <td class="p-2">1</td>
-                                <td class="p-2">Printer</td>
-                                <td class="p-2 text-green-600">Solved</td>
-                                <td class="p-2 text-red-500">High</td>
-                                <td class="p-2">
-                                    <button class="bg-blue-500 text-white px-2 py-1 text-xs rounded">View</button>
-                                </td>
-                            </tr>
-                            <tr class="border-t">
-                                <td class="p-2">2</td>
-                                <td class="p-2">Laptop ASUS</td>
-                                <td class="p-2 text-green-600">Solved</td>
-                                <td class="p-2 text-yellow-500">Medium</td>
-                                <td class="p-2">
-                                    <button class="bg-blue-500 text-white px-2 py-1 text-xs rounded">View</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Ticket Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- All Tickets Card -->
+                    <div class="bg-blue-600 text-white rounded-lg shadow-md p-6 flex flex-col justify-center items-center">
+                        <p class="text-lg font-medium mb-2">All Admission Tickets</p>
+                        <p class="text-4xl font-bold">129</p>
+                    </div>
+                    
+                    <!-- Open Tickets Card -->
+                    <div class="bg-gray-200 text-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-center items-center">
+                        <p class="text-lg font-medium mb-2">Open Ticket</p>
+                        <p class="text-4xl font-bold">50</p>
+                    </div>
+                    
+                    <!-- Closed Tickets Card -->
+                    <div class="bg-green-500 text-white rounded-lg shadow-md p-6 flex flex-col justify-center items-center">
+                        <p class="text-lg font-medium mb-2">Closed Ticket</p>
+                        <p class="text-4xl font-bold">43</p>
+                    </div>
+                    
+                    <!-- Waiting Tickets Card -->
+                    <div class="bg-yellow-400 text-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-center items-center">
+                        <p class="text-lg font-medium mb-2">Waiting Tickets</p>
+                        <p class="text-4xl font-bold">36</p>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Bar Chart -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">All Month Pass every 10 days</h3>
+                        <div class="chart-container mt-8">
+                            <div class="relative w-full" style="height: 220px;">
+                                <!-- Bar 1 -->
+                                <div class="bar" style="height: 160px; left: 7%;"></div>
+                                <div class="bar-value" style="left: 7%;">32</div>
+                                <div class="bar-label" style="left: 7%;">1</div>
+                                
+                                <!-- Bar 2 -->
+                                <div class="bar" style="height: 60px; left: 16%;"></div>
+                                <div class="bar-value" style="left: 16%;">12</div>
+                                <div class="bar-label" style="left: 16%;">2</div>
+                                
+                                <!-- Bar 3 -->
+                                <div class="bar" style="height: 115px; left: 25%;"></div>
+                                <div class="bar-value" style="left: 25%;">23</div>
+                                <div class="bar-label" style="left: 25%;">3</div>
+                                
+                                <!-- Bar 4 -->
+                                <div class="bar" style="height: 70px; left: 34%;"></div>
+                                <div class="bar-value" style="left: 34%;">14</div>
+                                <div class="bar-label" style="left: 34%;">4</div>
+                                
+                                <!-- Bar 5 -->
+                                <div class="bar" style="height: 115px; left: 43%;"></div>
+                                <div class="bar-value" style="left: 43%;">23</div>
+                                <div class="bar-label" style="left: 43%;">5</div>
+                                
+                                <!-- Bar 6 -->
+                                <div class="bar" style="height: 125px; left: 52%;"></div>
+                                <div class="bar-value" style="left: 52%;">25</div>
+                                <div class="bar-label" style="left: 52%;">6</div>
+                                
+                                <!-- Bar 7 -->
+                                <div class="bar" style="height: 105px; left: 61%;"></div>
+                                <div class="bar-value" style="left: 61%;">21</div>
+                                <div class="bar-label" style="left: 61%;">7</div>
+                                
+                                <!-- Bar 8 -->
+                                <div class="bar" style="height: 105px; left: 70%;"></div>
+                                <div class="bar-value" style="left: 70%;">21</div>
+                                <div class="bar-label" style="left: 70%;">8</div>
+                                
+                                <!-- Bar 9 -->
+                                <div class="bar" style="height: 105px; left: 79%;"></div>
+                                <div class="bar-value" style="left: 79%;">21</div>
+                                <div class="bar-label" style="left: 79%;">9</div>
+                                
+                                <!-- Bar 10 -->
+                                <div class="bar" style="height: 105px; left: 88%;"></div>
+                                <div class="bar-value" style="left: 88%;">21</div>
+                                <div class="bar-label" style="left: 88%;">10</div>
+                                
+                                <!-- X-axis label -->
+                                <div class="absolute bottom-0 left-0 w-full text-center text-sm text-gray-500 mt-4">
+                                    Days
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Donut Chart -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Total Tickets a Month by Category</h3>
+                        <div class="flex justify-center items-center h-40">
+                            <!-- Simple donut chart representation -->
+                            <div class="relative w-40 h-40">
+                                <!-- Using a simple representation of the donut chart -->
+                                <svg viewBox="0 0 100 100" class="w-full h-full">
+                                    <circle cx="50" cy="50" r="40" fill="#90caf9" />
+                                    <circle cx="50" cy="50" r="30" fill="white" />
+                                    <!-- Center text -->
+                                    <text x="50" y="55" text-anchor="middle" font-size="16" font-weight="bold">129</text>
+                                </svg>
+                                
+                                <!-- Donut segments would normally be created with actual data -->
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center">
+                                        <span class="text-2xl font-bold">129</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
