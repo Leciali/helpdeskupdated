@@ -1,3 +1,56 @@
+<style>
+    /* CSS untuk animasi sidebar */
+    .sidebar {
+      transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+      position: fixed;
+      z-index: 40;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .sidebar-collapsed {
+      transform: translateX(-100%);
+    }
+    
+    .content {
+      transition: margin-left 0.3s ease-in-out;
+    }
+    
+    .toggle-button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: rgba(0, 77, 153, 0.8);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+    
+    .toggle-button:hover {
+      background-color: rgba(0, 61, 122, 1);
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.25rem;
+      transition: all 0.2s ease;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-item i {
+      width: 18px;
+      text-align: center;
+    }
+  </style>
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar text-white w-40 flex flex-col h-screen" style="background-color: #0056b3;">
     <div class="flex justify-between items-center py-4 px-3 border-b border-blue-900" style="background-color: #003d7a;">
