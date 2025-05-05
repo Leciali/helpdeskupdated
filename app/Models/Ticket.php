@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Ticket extends Model
 {
@@ -31,6 +32,11 @@ class Ticket extends Model
         'end_date',
         'due_date',
         'resolved_date'
+    ];
+
+    // Tambahkan cast untuk memastikan ticket_duration selalu integer
+    protected $casts = [
+        'ticket_duration' => 'integer',
     ];
 
     /**
@@ -96,12 +102,14 @@ class Ticket extends Model
         if (($this->status === 'pending' || $this->status === 'open') && $now->greaterThan($dueDate)) {
             $this->status = 'late';
             $this->save();
+            Log::info('Ticket status auto-updated to late: ' . $this->ticket_number);
         }
 
         // Jika tiket diselesaikan
-        if ($this->status === 'solved') {
+        if ($this->status === 'solved' && empty($this->resolved_date)) {
             $this->resolved_date = $now;
             $this->save();
+            Log::info('Ticket resolved_date set for: ' . $this->ticket_number);
         }
     }
 
@@ -136,9 +144,10 @@ class Ticket extends Model
 
         $trend = [];
         for ($date = $startDate; $date <= $endDate; $date->addDay()) {
-            $trend[$date->format('Y-m-d')] = [
-                'open' => self::whereDate('created_at', $date->format('Y-m-d'))->open()->count(),
-                'solved' => self::whereDate('resolved_date', $date->format('Y-m-d'))->solved()->count()
+            $dateString = $date->format('Y-m-d');
+            $trend[$dateString] = [
+                'open' => self::whereDate('created_at', $dateString)->open()->count(),
+                'solved' => self::whereDate('resolved_date', $dateString)->solved()->count()
             ];
         }
 
