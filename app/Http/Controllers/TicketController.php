@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -14,8 +15,12 @@ class TicketController extends Controller
      */
     public function dashboardView()
     {
+        // Ambil semua tiket tanpa filter status
         $tickets = Ticket::orderBy('created_at', 'desc')
             ->paginate(10);
+        
+        // Log untuk debugging
+        Log::info('Dashboard View - Tickets Count: ' . $tickets->count());
         
         $statistics = Ticket::getTicketStatistics();
         
@@ -31,6 +36,9 @@ class TicketController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         
+        // Log untuk debugging
+        Log::info('Open Tickets View - Tickets Count: ' . $tickets->count());
+        
         return view('indexOpenTicket', compact('tickets'));
     }
 
@@ -43,6 +51,9 @@ class TicketController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         
+        // Log untuk debugging
+        Log::info('Pending Tickets View - Tickets Count: ' . $tickets->count());
+        
         return view('indexPendingTicket', compact('tickets'));
     }
 
@@ -54,6 +65,9 @@ class TicketController extends Controller
         $tickets = Ticket::where('status', 'solved')
             ->orderBy('resolved_date', 'desc')
             ->paginate(10);
+        
+        // Log untuk debugging
+        Log::info('Solved Tickets View - Tickets Count: ' . $tickets->count());
         
         return view('indexSolvedTicket', compact('tickets'));
     }
@@ -73,7 +87,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        return view('tickets.create');
+        return view('create');
     }
 
     /**
@@ -97,22 +111,37 @@ class TicketController extends Controller
                 ->withInput();
         }
 
-        $ticket = new Ticket();
-        $ticket->ticket_number = Ticket::generateTicketNumber();
-        $ticket->company_email = $request->input('company_email');
-        $ticket->company_name = $request->input('company_name');
-        $ticket->description = $request->input('description');
-        $ticket->asset_name = $request->input('asset_name');
-        $ticket->asset_series = $request->input('asset_series');
-        $ticket->priority = $request->input('priority');
-        $ticket->ticket_duration = $request->input('ticket_duration');
-        $ticket->status = 'open';
-        $ticket->start_date = Carbon::now();
-        $ticket->due_date = Carbon::now()->addDays($request->input('ticket_duration'));
-        $ticket->save();
+        try {
+            // Konversi ticket_duration ke integer untuk memastikan
+            $ticketDuration = (int)$request->input('ticket_duration');
 
-        return redirect()->route('user.dashboard')
-            ->with('success', 'Tiket berhasil dibuat');
+            $ticket = new Ticket();
+            $ticket->ticket_number = Ticket::generateTicketNumber();
+            $ticket->company_email = $request->input('company_email');
+            $ticket->company_name = $request->input('company_name');
+            $ticket->description = $request->input('description');
+            $ticket->asset_name = $request->input('asset_name');
+            $ticket->asset_series = $request->input('asset_series');
+            $ticket->priority = $request->input('priority');
+            $ticket->ticket_duration = $ticketDuration; // Menggunakan nilai yang sudah dikonversi
+            $ticket->status = 'open'; // Status awal adalah 'open'
+            $ticket->start_date = Carbon::now();
+            $ticket->due_date = Carbon::now()->addDays($ticketDuration); // Menggunakan nilai yang sudah dikonversi
+            $ticket->save();
+
+            // Log untuk debugging
+            Log::info('Ticket Created: ' . $ticket->ticket_number . ' with status: ' . $ticket->status);
+
+            return redirect()->route('user.dashboard')
+                ->with('success', 'Tiket berhasil dibuat');
+        } catch (\Exception $e) {
+            // Log error jika terjadi
+            Log::error('Error creating ticket: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
@@ -153,6 +182,9 @@ class TicketController extends Controller
         }
 
         $ticket->save();
+        
+        // Log untuk debugging
+        Log::info('Ticket Status Updated: ' . $ticket->ticket_number . ' to status: ' . $ticket->status);
 
         return redirect()->back()
             ->with('success', 'Status tiket berhasil diperbarui');
