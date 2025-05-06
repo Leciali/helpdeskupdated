@@ -166,10 +166,10 @@
                                     <td class="p-2">{{ $ticket->company_name }}</td>
                                     <td class="p-2">{{ Str::limit($ticket->description, 50) }}</td>
                                     <td class="p-2">
-                                        {{ $ticket->resolved_date ? $ticket->resolved_date->format('d/m/Y') : 'N/A' }}
+                                        {{ $ticket->due_date ? (is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('d/m/Y')) : 'N/A' }}
                                     </td>
                                     <td class="p-2">
-                                        <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded">
+                                        <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 transition-colors">
                                             View Details
                                         </button>
                                     </td>
@@ -191,22 +191,114 @@
         </div>
     </div>
 
-    <!-- Ticket Details Modal -->
-    <div id="ticketModal" class="fixed inset-0 hidden bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Ticket Details</h2>
-                <button onclick="closeTicketModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Ticket Details Modal - New Improved Version -->
+    <div id="ticketModal" class="fixed inset-0 hidden bg-black bg-opacity-50 z-50 flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white rounded-lg shadow-xl p-0 max-w-md w-full transform transition-transform duration-300 scale-95 opacity-0" id="modalContent">
+            <!-- Modal Header with colored bar based on priority -->
+            <div id="modalHeader" class="rounded-t-lg p-4 text-white relative">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-ticket-alt mr-2"></i>
+                        <span id="ticketNumber"></span>
+                    </h2>
+                    <button onclick="closeTicketModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="mt-1 flex items-center">
+                    <span id="priorityBadge" class="text-xs px-2 py-1 rounded-full"></span>
+                    <span id="statusBadge" class="ml-2 text-xs px-2 py-1 rounded-full"></span>
+                </div>
             </div>
             
-            <!-- Modal Content will be dynamically populated -->
-            <div id="ticketModalContent"></div>
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Company Info -->
+                <div class="mb-6 border-b border-gray-200 pb-4">
+                    <div class="flex items-center mb-2">
+                        <div class="bg-blue-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-building text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 id="companyName" class="font-semibold text-gray-800"></h3>
+                            <p id="companyEmail" class="text-sm text-gray-600"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ticket Details -->
+                <div class="space-y-4">
+                    <!-- Description -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Description</h4>
+                        <p id="description" class="text-gray-800 whitespace-pre-line text-sm"></p>
+                    </div>
+                    
+                    <!-- Asset Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Asset Name</h4>
+                            <p id="assetName" class="text-gray-800 text-sm"></p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Asset Series</h4>
+                            <p id="assetSeries" class="text-gray-800 text-sm"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Timeline</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <div class="bg-blue-100 rounded-full p-1 mr-2">
+                                    <i class="fas fa-calendar-plus text-xs text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-medium text-gray-700">Created</h5>
+                                    <p id="createdDate" class="text-xs text-gray-600"></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-green-100 rounded-full p-1 mr-2">
+                                    <i class="fas fa-calendar-check text-xs text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-medium text-gray-700">Resolved</h5>
+                                    <p id="resolvedDate" class="text-xs text-gray-600"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Resolution Info -->
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Resolution</h4>
+                                <p id="resolutionTime" class="text-sm text-gray-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 p-4 rounded-b-lg border-t border-gray-200">
+                <div class="flex justify-end">
+                    <button onclick="closeTicketModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors focus:outline-none">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Sidebar toggle script
         const sidebar = document.getElementById('sidebar');
         const content = document.getElementById('content');
         const toggleBtn = document.getElementById('toggleSidebar');
@@ -232,45 +324,183 @@
         // Modal Functions
         function openTicketModal(ticketId) {
             const modal = document.getElementById('ticketModal');
-            const modalContent = document.getElementById('ticketModalContent');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Show modal but content is still invisible
+            modal.classList.remove('hidden');
             
             // Fetch ticket details via AJAX 
             fetch(`/tickets/${ticketId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(ticket => {
-                    modalContent.innerHTML = `
-                        <div class="space-y-2">
-                            <p><strong>Ticket Number:</strong> ${ticket.ticket_number}</p>
-                            <p><strong>Company:</strong> ${ticket.company_name}</p>
-                            <p><strong>Email:</strong> ${ticket.company_email}</p>
-                            <p><strong>Description:</strong> ${ticket.description}</p>
-                            <p><strong>Asset Name:</strong> ${ticket.asset_name || 'N/A'}</p>
-                            <p><strong>Asset Series:</strong> ${ticket.asset_series || 'N/A'}</p>
-                            <p><strong>Priority:</strong> ${ticket.priority}</p>
-                            <p><strong>Resolved Date:</strong> ${new Date(ticket.resolved_date).toLocaleDateString()}</p>
-                            <p><strong>Total Resolution Time:</strong> ${calculateResolutionTime(ticket.created_at, ticket.resolved_date)}</p>
-                        </div>
-                    `;
-                    modal.classList.remove('hidden');
+                    // Set modal header color based on priority
+                    const headerColor = getPriorityColor(ticket.priority);
+                    document.getElementById('modalHeader').style.backgroundColor = headerColor;
+                    
+                    // Set ticket details
+                    document.getElementById('ticketNumber').textContent = ticket.ticket_number;
+                    
+                    // Set priority badge
+                    const priorityBadge = document.getElementById('priorityBadge');
+                    priorityBadge.textContent = capitalizeFirstLetter(ticket.priority);
+                    priorityBadge.style.backgroundColor = getPriorityBgColor(ticket.priority);
+                    priorityBadge.style.color = getPriorityTextColor(ticket.priority);
+                    
+                    // Set status badge
+                    const statusBadge = document.getElementById('statusBadge');
+                    statusBadge.textContent = capitalizeFirstLetter(ticket.status);
+                    statusBadge.style.backgroundColor = getStatusBgColor(ticket.status);
+                    statusBadge.style.color = getStatusTextColor(ticket.status);
+                    
+                    // Set company info
+                    document.getElementById('companyName').textContent = ticket.company_name;
+                    document.getElementById('companyEmail').textContent = ticket.company_email;
+                    
+                    // Set ticket details
+                    document.getElementById('description').textContent = ticket.description;
+                    document.getElementById('assetName').textContent = ticket.asset_name || 'N/A';
+                    document.getElementById('assetSeries').textContent = ticket.asset_series || 'N/A';
+                    
+                    // Set timeline
+                    document.getElementById('createdDate').textContent = formatDateTime(ticket.created_at);
+                    document.getElementById('resolvedDate').textContent = ticket.resolved_date ? formatDateTime(ticket.resolved_date) : 'Not resolved yet';
+                    
+                    // Set resolution info
+                    document.getElementById('resolutionTime').textContent = `Resolved in ${calculateResolutionTime(ticket.created_at, ticket.resolved_date)}`;
+                    
+                    // Animate modal appearance
+                    setTimeout(() => {
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                    }, 50);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to load ticket details');
+                    document.getElementById('modalContent').innerHTML = `
+                        <div class="p-6 text-center">
+                            <div class="bg-red-100 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-red-600 mb-2">Error Loading Ticket</h3>
+                            <p class="text-gray-600 mb-4">Could not load the ticket details. Please try again.</p>
+                            <button onclick="closeTicketModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                    modalContent.classList.remove('scale-95', 'opacity-0');
                 });
         }
 
         function closeTicketModal() {
             const modal = document.getElementById('ticketModal');
-            modal.classList.add('hidden');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Animate modal disappearance
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            
+            // Hide modal after animation completes
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
-        // Helper function to calculate resolution time
+        // Helper functions
         function calculateResolutionTime(createdAt, resolvedAt) {
+            if (!resolvedAt) return 'Not resolved yet';
+            
             const created = new Date(createdAt);
             const resolved = new Date(resolvedAt);
             const diffTime = Math.abs(resolved - created);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            return `${diffDays} day(s)`;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (diffDays > 0) {
+                return `${diffDays} day${diffDays > 1 ? 's' : ''} and ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+            } else if (diffHours > 0) {
+                return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+            } else {
+                const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+                return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+            }
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function getPriorityColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#10B981'; // Green
+                case 'medium': return '#F59E0B'; // Amber
+                case 'high': return '#EF4444'; // Red
+                case 'critical': return '#7F1D1D'; // Dark Red
+                default: return '#6B7280'; // Gray
+            }
+        }
+        
+        function getPriorityBgColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#D1FAE5'; // Light Green
+                case 'medium': return '#FEF3C7'; // Light Amber
+                case 'high': return '#FEE2E2'; // Light Red
+                case 'critical': return '#FECACA'; // Lighter Red
+                default: return '#F3F4F6'; // Light Gray
+            }
+        }
+        
+        function getPriorityTextColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#065F46'; // Dark Green
+                case 'medium': return '#92400E'; // Dark Amber
+                case 'high': return '#B91C1C'; // Dark Red
+                case 'critical': return '#7F1D1D'; // Darker Red
+                default: return '#374151'; // Dark Gray
+            }
+        }
+        
+        function getStatusBgColor(status) {
+            switch (status.toLowerCase()) {
+                case 'open': return '#DBEAFE'; // Light Blue
+                case 'pending': return '#FEF3C7'; // Light Amber
+                case 'in_progress': return '#E0E7FF'; // Light Indigo
+                case 'solved': return '#D1FAE5'; // Light Green
+                case 'late': return '#FEE2E2'; // Light Red
+                case 'closed': return '#E5E7EB'; // Light Gray
+                default: return '#F3F4F6'; // Light Gray
+            }
+        }
+        
+        function getStatusTextColor(status) {
+            switch (status.toLowerCase()) {
+                case 'open': return '#1E40AF'; // Dark Blue
+                case 'pending': return '#92400E'; // Dark Amber
+                case 'in_progress': return '#4338CA'; // Dark Indigo
+                case 'solved': return '#065F46'; // Dark Green
+                case 'late': return '#B91C1C'; // Dark Red
+                case 'closed': return '#374151'; // Dark Gray
+                default: return '#374151'; // Dark Gray
+            }
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     </script>
 </body>

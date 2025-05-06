@@ -25,6 +25,9 @@ Route::middleware(["auth"])->group(function () {
     // Route untuk update status tiket
     Route::patch('/tickets/{id}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
     
+    // Route untuk detail tiket
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+
     // Route logout
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
 });
