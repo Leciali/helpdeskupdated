@@ -40,30 +40,16 @@ class Ticket extends Model
     ];
 
     /**
-     * Generate unique ticket number
-     */
+ * Generate unique ticket number
+ */
     public static function generateTicketNumber()
     {
-        $prefix = '';
-        switch (request()->input('priority')) {
-            case 'low':
-                $prefix = 'L';
-                break;
-            case 'medium':
-                $prefix = 'M';
-                break;
-            case 'high':
-                $prefix = 'H';
-                break;
-            case 'critical':
-                $prefix = 'C';
-                break;
-        }
-
+        $prefix = 'T - ';
+    
         $lastTicket = self::orderBy('id', 'desc')->first();
-        $lastNumber = $lastTicket ? intval(substr($lastTicket->ticket_number, -3)) : 0;
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        
+        $lastNumber = $lastTicket ? intval(substr($lastTicket->ticket_number, strlen($prefix))) : 0;
+        $newNumber = str_pad($lastNumber + 1, 11, '0', STR_PAD_LEFT);
+    
         return $prefix . $newNumber;
     }
 
