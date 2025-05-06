@@ -24,6 +24,12 @@ class UserSeeder extends Seeder
                 'name' => 'usertes',
                 'email' => 'tes@gmail.com',
                 'password' => bcrypt('123'),
+            ],
+
+            [
+                'name' => 'monitor',
+                'email' => 'monitor@gmail.com',
+                'password' => bcrypt('123'),
             ]
         ];
     

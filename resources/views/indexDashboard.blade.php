@@ -144,7 +144,7 @@
 
                 <div class="flex space-x-2">
                     <!-- Tombol New Ticket -->
-                    <a href="{{ route('tickets.create') }}" class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded flex items-center">
+                    <a href="{{ route('user.open-ticket') }}" class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded flex items-center">
                         <span class="mr-1">+</span> New Ticket
                     </a>
                 </div>
