@@ -145,12 +145,16 @@ class TicketController extends Controller
     }
 
     /**
-     * Menampilkan detail tiket
-     */
-    public function show(Ticket $ticket)
-    {
-        return response()->json($ticket);
-    }
+ * Menampilkan detail tiket
+ */
+public function show(Ticket $ticket)
+{
+    // Logging untuk debugging
+    Log::info('Showing ticket details for: ' . $ticket->ticket_number);
+    
+    // Return ticket data sebagai JSON
+    return response()->json($ticket);
+}
 
     /**
      * Memperbarui status tiket

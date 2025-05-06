@@ -186,7 +186,7 @@
                                                 </span>
                                             </td>
                                             <td class="p-2">
-                                                {{ $ticket->due_date ? $ticket->due_date->format('d/m/Y') : 'N/A' }}
+                                                {{ $ticket->due_date ? (is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('d/m/Y')) : 'N/A' }}
                                             </td>
                                             <td class="p-2">
                                                 <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
@@ -213,39 +213,147 @@
         </div>
     </div>
 
-    <!-- Ticket Details Modal -->
-    <div id="ticketModal" class="fixed inset-0 hidden bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Ticket Details</h2>
-                <button onclick="closeTicketModal()" class="text-gray-500 hover:text-gray-700">
+    <!-- Ticket Details Modal - Compact Version with Scroll -->
+    <div id="ticketModal" class="fixed inset-0 hidden bg-black bg-opacity-50 z-50 flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white rounded-lg shadow-xl p-0 max-w-sm w-full transform transition-transform duration-300 scale-95 opacity-0 max-h-[90vh] flex flex-col" id="modalContent">
+        <!-- Modal Header with colored bar based on priority -->
+        <div id="modalHeader" class="rounded-t-lg p-3 text-white relative flex-shrink-0">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold flex items-center">
+                    <i class="fas fa-ticket-alt mr-2"></i>
+                    <span id="ticketNumber"></span>
+                </h2>
+                <button onclick="closeTicketModal()" class="text-white hover:text-gray-200 focus:outline-none">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
-            <!-- Modal Content -->
-            <div id="ticketModalContent">
-                <!-- Content will be dynamically populated -->
+            <div class="mt-1 flex items-center">
+                <span id="priorityBadge" class="text-xs px-2 py-1 rounded-full"></span>
+                <span id="statusBadge" class="ml-2 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Pending</span>
             </div>
-
-            <!-- Status Update Form -->
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <h3 class="font-medium mb-2">Update Status</h3>
-                <form id="statusUpdateForm" method="POST" class="flex space-x-2">
-                    @csrf
-                    @method('PATCH')
-                    <select name="status" class="border rounded px-2 py-1 text-sm flex-grow">
+        </div>
+        
+        <!-- Scrollable Modal Body -->
+        <div class="p-4 overflow-y-auto flex-grow">
+            <!-- Company Info -->
+            <div class="mb-4 border-b border-gray-200 pb-3">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 rounded-full p-2 mr-2">
+                        <i class="fas fa-building text-blue-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 id="companyName" class="font-semibold text-gray-800 text-sm"></h3>
+                        <p id="companyEmail" class="text-xs text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ticket Details -->
+            <div class="space-y-3">
+                <!-- Description -->
+                <div>
+                    <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Description</h4>
+                    <p id="description" class="text-gray-800 whitespace-pre-line text-sm"></p>
+                </div>
+                
+                <!-- Asset Info -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Asset Name</h4>
+                        <p id="assetName" class="text-gray-800 text-sm"></p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Asset Series</h4>
+                        <p id="assetSeries" class="text-gray-800 text-sm"></p>
+                    </div>
+                </div>
+                
+                <!-- Timeline and Countdown -->
+                <div>
+                    <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Timeline</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 rounded-full p-1 mr-2">
+                                <i class="fas fa-calendar-plus text-xs text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-medium text-gray-700">Created</h5>
+                                <p id="createdDate" class="text-xs text-gray-600"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 rounded-full p-1 mr-2">
+                                <i class="fas fa-hourglass-half text-xs text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-medium text-gray-700">Time Remaining</h5>
+                                <p id="timeRemaining" class="text-xs text-yellow-600 font-semibold"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="bg-red-100 rounded-full p-1 mr-2">
+                                <i class="fas fa-calendar-times text-xs text-red-600"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-medium text-gray-700">Due Date</h5>
+                                <p id="dueDate" class="text-xs text-red-600 font-semibold"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Countdown Progress Bar -->
+                <div class="bg-gray-50 p-2 rounded-lg">
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="text-xs font-medium text-gray-700">Time Until Due</h4>
+                        <span id="percentRemaining" class="text-xs font-medium text-yellow-600"></span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                        <div id="timeProgressBar" class="h-2 rounded-full bg-yellow-500" style="width: 50%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span>Created</span>
+                        <span>Due Date</span>
+                    </div>
+                </div>
+                
+                <!-- Priority Info -->
+                <div class="bg-gray-50 p-2 rounded-lg">
+                    <div class="flex items-center">
+                        <div id="priorityIcon" class="rounded-full p-1.5 mr-2">
+                            <i id="priorityIconInner" class="fas fa-exclamation text-white text-xs"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 text-sm">Priority Level</h4>
+                            <p id="priorityDescription" class="text-xs"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer with Status Update Form -->
+        <div class="bg-gray-50 p-3 rounded-b-lg border-t border-gray-200 flex-shrink-0">
+            <h3 class="font-medium mb-1.5 text-gray-700 text-sm">Update Status</h3>
+            <form id="statusUpdateForm" method="POST" class="flex flex-col space-y-2">
+                @csrf
+                @method('PATCH')
+                <div class="flex space-x-2 w-full">
+                    <select name="status" class="border border-gray-300 rounded-md px-2 py-1.5 text-sm flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="open">Open</option>
-                        <option value="pending">Pending</option>
+                        <option value="pending" selected>Pending</option>
                         <option value="in_progress">In Progress</option>
                         <option value="solved">Solved</option>
                     </select>
-                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                    <button type="submit" class="bg-blue-500 text-white px-3 py-1.5 rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-sm">
                         Update
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
+    </div>
     </div>
 
     <script>
@@ -279,117 +387,259 @@
         // Modal Functions
         function openTicketModal(ticketId) {
             const modal = document.getElementById('ticketModal');
-            const modalContent = document.getElementById('ticketModalContent');
-            const statusForm = document.getElementById('statusUpdateForm');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Show modal but content is still invisible
+            modal.classList.remove('hidden');
             
             // Fetch ticket details via AJAX 
             fetch(`/tickets/${ticketId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(ticket => {
-                    // Update modal content
-                    modalContent.innerHTML = `
-                        <div class="space-y-3">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <p class="text-sm text-gray-600">Ticket Number:</p>
-                                    <p class="font-semibold">${ticket.ticket_number}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Priority:</p>
-                                    <p class="font-semibold ${
-                                        ticket.priority === 'low' ? 'text-green-600' :
-                                        ticket.priority === 'medium' ? 'text-yellow-600' :
-                                        ticket.priority === 'high' ? 'text-orange-600' :
-                                        'text-red-600'
-                                    }">
-                                        ${ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Status:</p>
-                                <p class="font-semibold">
-                                    <span class="px-2 py-1 rounded text-xs ${
-                                        ticket.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                                        ticket.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                        ticket.status === 'in_progress' ? 'bg-indigo-100 text-indigo-800' :
-                                        ticket.status === 'solved' ? 'bg-green-100 text-green-800' :
-                                        ticket.status === 'late' ? 'bg-red-100 text-red-800' :
-                                        'bg-gray-100 text-gray-800'
-                                    }">
-                                        ${ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Company:</p>
-                                <p class="font-semibold">${ticket.company_name}</p>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Company Email:</p>
-                                <p>${ticket.company_email}</p>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Asset Name:</p>
-                                <p>${ticket.asset_name || 'N/A'}</p>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Asset Series:</p>
-                                <p>${ticket.asset_series || 'N/A'}</p>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Description:</p>
-                                <p>${ticket.description}</p>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <p class="text-sm text-gray-600">Start Date:</p>
-                                    <p>${ticket.start_date ? new Date(ticket.start_date).toLocaleDateString() : 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Due Date:</p>
-                                    <p>${ticket.due_date ? new Date(ticket.due_date).toLocaleDateString() : 'N/A'}</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <p class="text-sm text-gray-600">Ticket Duration:</p>
-                                <p>${ticket.ticket_duration} day(s)</p>
-                            </div>
-
-                            ${ticket.resolved_date ? `
-                            <div>
-                                <p class="text-sm text-gray-600">Resolved Date:</p>
-                                <p>${new Date(ticket.resolved_date).toLocaleDateString()}</p>
-                            </div>
-                            ` : ''}
-                        </div>
-                    `;
-
-                    // Update status form action and select current status
-                    statusForm.action = `/tickets/${ticket.id}/status`;
-                    const statusSelect = statusForm.querySelector('select[name="status"]');
-                    statusSelect.value = ticket.status;
+                    // Set modal header color based on priority
+                    const headerColor = getPriorityColor(ticket.priority);
+                    document.getElementById('modalHeader').style.backgroundColor = headerColor;
                     
-                    // Show modal
-                    modal.classList.remove('hidden');
+                    // Set ticket details
+                    document.getElementById('ticketNumber').textContent = ticket.ticket_number;
+                    
+                    // Set priority badge and icon
+                    const priorityBadge = document.getElementById('priorityBadge');
+                    priorityBadge.textContent = capitalizeFirstLetter(ticket.priority);
+                    priorityBadge.style.backgroundColor = getPriorityBgColor(ticket.priority);
+                    priorityBadge.style.color = getPriorityTextColor(ticket.priority);
+                    
+                    // Set priority icon color
+                    const priorityIcon = document.getElementById('priorityIcon');
+                    priorityIcon.style.backgroundColor = getPriorityColor(ticket.priority);
+                    
+                    // Set priority description
+                    const priorityDescription = document.getElementById('priorityDescription');
+                    switch(ticket.priority.toLowerCase()) {
+                        case 'low':
+                            priorityDescription.textContent = 'Low impact issue - Can be addressed when capacity permits';
+                            break;
+                        case 'medium':
+                            priorityDescription.textContent = 'Medium priority issue - Should be addressed soon';
+                            break;
+                        case 'high':
+                            priorityDescription.textContent = 'High priority issue - Requires prompt attention';
+                            break;
+                        case 'critical':
+                            priorityDescription.textContent = 'Critical issue - Requires immediate attention';
+                            break;
+                        default:
+                            priorityDescription.textContent = 'Priority level not specified';
+                    }
+                    
+                    // Set company info
+                    document.getElementById('companyName').textContent = ticket.company_name;
+                    document.getElementById('companyEmail').textContent = ticket.company_email;
+                    
+                    // Set ticket details
+                    document.getElementById('description').textContent = ticket.description;
+                    document.getElementById('assetName').textContent = ticket.asset_name || 'N/A';
+                    document.getElementById('assetSeries').textContent = ticket.asset_series || 'N/A';
+                    
+                    // Set timeline
+                    document.getElementById('createdDate').textContent = formatDateTime(ticket.created_at);
+                    
+                    // Set due date
+                    const dueDate = new Date(ticket.due_date);
+                    document.getElementById('dueDate').textContent = formatDateTime(ticket.due_date);
+                    
+                    // Calculate time remaining
+                    const timeRemaining = calculateTimeRemaining(new Date(), dueDate);
+                    document.getElementById('timeRemaining').textContent = timeRemaining.text;
+                    
+                    // Update progress bar
+                    const percentRemaining = calculatePercentRemaining(new Date(ticket.created_at), dueDate);
+                    document.getElementById('percentRemaining').textContent = `${percentRemaining}% time remaining`;
+                    document.getElementById('timeProgressBar').style.width = `${percentRemaining}%`;
+                    
+                    // Change color based on urgency
+                    if (percentRemaining < 25) {
+                        document.getElementById('timeProgressBar').style.backgroundColor = '#EF4444'; // Red for urgent
+                        document.getElementById('percentRemaining').classList.remove('text-yellow-600');
+                        document.getElementById('percentRemaining').classList.add('text-red-600');
+                    } else if (percentRemaining < 50) {
+                        document.getElementById('timeProgressBar').style.backgroundColor = '#F59E0B'; // Amber for attention
+                    }
+                    
+                    // Update status form
+                    const statusForm = document.getElementById('statusUpdateForm');
+                    statusForm.action = `/tickets/${ticket.id}/status`;
+                    
+                    // Animate modal appearance
+                    setTimeout(() => {
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                    }, 50);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to load ticket details');
+                    document.getElementById('modalContent').innerHTML = `
+                        <div class="p-6 text-center">
+                            <div class="bg-red-100 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-red-600 mb-2">Error Loading Ticket</h3>
+                            <p class="text-gray-600 mb-4">Could not load the ticket details. Please try again.</p>
+                            <button onclick="closeTicketModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                    modalContent.classList.remove('scale-95', 'opacity-0');
                 });
         }
 
         function closeTicketModal() {
             const modal = document.getElementById('ticketModal');
-            modal.classList.add('hidden');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Animate modal disappearance
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            
+            // Hide modal after animation completes
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Helper functions
+        function calculateTimeRemaining(now, dueDate) {
+            // Calculate the difference in milliseconds
+            const diff = dueDate - now;
+            
+            // If due date is in the past
+            if (diff <= 0) {
+                return {
+                    text: 'Overdue!',
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    isOverdue: true
+                };
+            }
+            
+            // Calculate remaining time
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            // Format the text
+            let text = '';
+            if (days > 0) {
+                text = `${days} day${days > 1 ? 's' : ''} and ${hours} hour${hours > 1 ? 's' : ''}`;
+            } else if (hours > 0) {
+                text = `${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            } else {
+                text = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+            }
+            
+            return {
+                text: text,
+                days: days,
+                hours: hours,
+                minutes: minutes,
+                isOverdue: false
+            };
+        }
+        
+        function calculatePercentRemaining(createdDate, dueDate) {
+            const now = new Date();
+            const totalDuration = dueDate - createdDate;
+            const elapsed = now - createdDate;
+            
+            // If already due or past
+            if (now > dueDate) {
+                return 0;
+            }
+            
+            // Calculate percentage remaining
+            const percentElapsed = (elapsed / totalDuration) * 100;
+            const percentRemaining = 100 - percentElapsed;
+            
+            return Math.round(percentRemaining);
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function getPriorityColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#10B981'; // Green
+                case 'medium': return '#F59E0B'; // Amber
+                case 'high': return '#EF4444'; // Red
+                case 'critical': return '#7F1D1D'; // Dark Red
+                default: return '#6B7280'; // Gray
+            }
+        }
+        
+        function getPriorityBgColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#D1FAE5'; // Light Green
+                case 'medium': return '#FEF3C7'; // Light Amber
+                case 'high': return '#FEE2E2'; // Light Red
+                case 'critical': return '#FECACA'; // Lighter Red
+                default: return '#F3F4F6'; // Light Gray
+            }
+        }
+        
+        function getPriorityTextColor(priority) {
+            switch (priority.toLowerCase()) {
+                case 'low': return '#065F46'; // Dark Green
+                case 'medium': return '#92400E'; // Dark Amber
+                case 'high': return '#B91C1C'; // Dark Red
+                case 'critical': return '#7F1D1D'; // Darker Red
+                default: return '#374151'; // Dark Gray
+            }
+        }
+        
+        function getStatusBgColor(status) {
+            switch (status.toLowerCase()) {
+                case 'open': return '#DBEAFE'; // Light Blue
+                case 'pending': return '#FEF3C7'; // Light Amber
+                case 'in_progress': return '#E0E7FF'; // Light Indigo
+                case 'solved': return '#D1FAE5'; // Light Green
+                case 'late': return '#FEE2E2'; // Light Red
+                case 'closed': return '#E5E7EB'; // Light Gray
+                default: return '#F3F4F6'; // Light Gray
+            }
+        }
+        
+        function getStatusTextColor(status) {
+            switch (status.toLowerCase()) {
+                case 'open': return '#1E40AF'; // Dark Blue
+                case 'pending': return '#92400E'; // Dark Amber
+                case 'in_progress': return '#4338CA'; // Dark Indigo
+                case 'solved': return '#065F46'; // Dark Green
+                case 'late': return '#B91C1C'; // Dark Red
+                case 'closed': return '#374151'; // Dark Gray
+                default: return '#374151'; // Dark Gray
+            }
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     </script>
 </body>
