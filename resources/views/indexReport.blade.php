@@ -219,12 +219,12 @@
                     
                     <!-- Export buttons -->
                     <div class="flex space-x-1">
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
+                        <a href='/cetak-pdf' class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
                             <i class="fas fa-file-pdf mr-1 text-red-500"></i> PDF
-                        </button>
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
+                        </a>
+                        <a href='/cetak-excel' class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
                             <i class="fas fa-file-excel mr-1 text-green-600"></i> Excel
-                        </button>
+                        </a>
                     </div>
                     
                     <a href="{{ route('user.open-ticket') }}" class="bg-blue-500 text-white px-2 py-1 text-sm font-semibold rounded flex items-center">
@@ -680,28 +680,52 @@
                                         <p class="text-xs text-gray-500">Critical</p>
                                         <div class="flex justify-between items-center">
                                             <p class="text-lg font-semibold">{{ $statistics['tickets_by_priority']['critical'] ?? 0 }}</p>
-                                            <span class="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">{{ number_format(($statistics['tickets_by_priority']['critical'] / $statistics['total_tickets']) * 100, 1) }}%</span>
+                                            <span class="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
+                                                @if(($statistics['total_tickets'] ?? 0) > 0)
+                                                    {{ number_format(($statistics['tickets_by_priority']['critical'] / $statistics['total_tickets']) * 100, 1) }}%
+                                                @else
+                                                    0%
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="bg-gray-50 p-2 rounded">
                                         <p class="text-xs text-gray-500">High</p>
                                         <div class="flex justify-between items-center">
                                             <p class="text-lg font-semibold">{{ $statistics['tickets_by_priority']['high'] ?? 0 }}</p>
-                                            <span class="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 rounded">{{ number_format(($statistics['tickets_by_priority']['high'] / $statistics['total_tickets']) * 100, 1) }}%</span>
+                                            <span class="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 rounded">
+                                                @if(($statistics['total_tickets'] ?? 0) > 0)
+                                                    {{ number_format(($statistics['tickets_by_priority']['high'] / $statistics['total_tickets']) * 100, 1) }}%
+                                                @else
+                                                    0%
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="bg-gray-50 p-2 rounded">
                                         <p class="text-xs text-gray-500">Medium</p>
                                         <div class="flex justify-between items-center">
                                             <p class="text-lg font-semibold">{{ $statistics['tickets_by_priority']['medium'] ?? 0 }}</p>
-                                            <span class="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">{{ number_format(($statistics['tickets_by_priority']['medium'] / $statistics['total_tickets']) * 100, 1) }}%</span>
+                                            <span class="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">
+                                                @if(($statistics['total_tickets'] ?? 0) > 0)
+                                                    {{ number_format(($statistics['tickets_by_priority']['medium'] / $statistics['total_tickets']) * 100, 1) }}%
+                                                @else
+                                                    0%
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="bg-gray-50 p-2 rounded">
                                         <p class="text-xs text-gray-500">Low</p>
                                         <div class="flex justify-between items-center">
                                             <p class="text-lg font-semibold">{{ $statistics['tickets_by_priority']['low'] ?? 0 }}</p>
-                                            <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded">{{ number_format(($statistics['tickets_by_priority']['low'] / $statistics['total_tickets']) * 100, 1) }}%</span>
+                                            <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded">
+                                                @if(($statistics['total_tickets'] ?? 0) > 0)
+                                                    {{ number_format(($statistics['tickets_by_priority']['low'] / $statistics['total_tickets']) * 100, 1) }}%
+                                                @else
+                                                    0%
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -1138,6 +1162,15 @@
                 high: {{ $statistics['tickets_by_priority']['high'] ?? 0 }},
                 critical: {{ $statistics['tickets_by_priority']['critical'] ?? 0 }}
             };
+
+            // If all values are zero, set some default values to prevent chart errors
+            const total = Object.values(priorityData).reduce((a, b) => a + b, 0);
+            if (total === 0) {
+                priorityData.low = 1;
+                priorityData.medium = 1;
+                priorityData.high = 1;
+                priorityData.critical = 1;
+            }
 
             new Chart(ctx, {
                 type: 'doughnut',
