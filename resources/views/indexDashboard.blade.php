@@ -212,7 +212,17 @@
                                                 </span>
                                             </td>
                                             <td class="p-2">
-                                              {{ $ticket->due_date ? (is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('d/m/Y')) : 'N/A' }}                                            </td>
+                                            @if($ticket->due_date)
+                                                <div class="flex items-center space-x-2">
+                                                <div class="bg-gray-100 text-gray-800 text-sm font-semibold px-3 py-1 rounded shadow-sm countdown" 
+                                                    data-due-date="{{ is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('Y-m-d H:i:s') }}">
+                                                    Loading...
+                                                </div>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 italic">N/A</span>
+                                            @endif
+                                            </td>
                                             <td class="p-2">
                                                 <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
                                                     View Details
@@ -615,6 +625,35 @@
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
+        
+        function formatCountdown(diff) {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            if (diff <= 0) return '<span class="text-red-600 font-bold">Expired</span>';
+
+            return `
+            ${days > 0 ? `<span class="text-blue-600">${days}d</span> ` : ''}
+            <span>${String(hours).padStart(2, '0')}h</span> :
+            <span>${String(minutes).padStart(2, '0')}m</span> :
+            <span>${String(seconds).padStart(2, '0')}s</span>
+            `;
+        }
+
+        function updateCountdown() {
+            const elements = document.querySelectorAll('.countdown');
+            elements.forEach(el => {
+            const dueDate = new Date(el.dataset.dueDate);
+            const now = new Date();
+            const diff = dueDate - now;
+            el.innerHTML = formatCountdown(diff);
+            });
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
     </script>
 </body>
 </html>

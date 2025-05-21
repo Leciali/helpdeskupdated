@@ -28,6 +28,11 @@ Route::middleware(["auth"])->group(function () {
     // Route untuk detail tiket
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 
+    // Route untuk Export
+    Route::get('/cetak-pdf', [TicketController::class, 'ExportPdf']);
+    Route::get('/cetak-excel', [TicketController::class, 'ExportExcel']);
+
+
     // Route logout
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
 });

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TicketExport;
 
 class TicketController extends Controller
 {
@@ -209,5 +212,22 @@ public function show(Ticket $ticket)
             'message' => 'Ticket statuses updated',
             'updated' => $tickets->count()
         ]);
+    }
+
+    public function ExportPdf()
+    {
+        $tickets = Ticket::all();
+        // return view('export.DataTicket', compact('tickets'));
+        $timestamp = Carbon::now()->format('Ymd_His');
+        $pdf = Pdf::loadView('export.DataTicket',  compact('tickets'));
+        return $pdf->download('laporan-pengguna-' . $timestamp . '.pdf');
+    }
+    
+    public function ExportExcel()
+    {
+        $tickets = Ticket::all();
+        $timestamp = Carbon::now()->format('Ymd_His');
+        return Excel::download(new TicketExport, 'laporan-pengguna-' . $timestamp . '.xlsx');
+
     }
 }
