@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* CSS untuk animasi sidebar */
         .sidebar {
@@ -219,10 +220,10 @@
                     
                     <!-- Export buttons -->
                     <div class="flex space-x-1">
-                        <a href='/cetak-pdf' class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
+                        <a href='/cetak-pdf' id="downloadPdfBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
                             <i class="fas fa-file-pdf mr-1 text-red-500"></i> PDF
                         </a>
-                        <a href='/cetak-excel' class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
+                        <a href='/cetak-excel' id="downloadExcelBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 text-xs font-medium rounded flex items-center">
                             <i class="fas fa-file-excel mr-1 text-green-600"></i> Excel
                         </a>
                     </div>
@@ -1750,6 +1751,37 @@
                 }
             });
         }
+
+        // Download confirmation for PDF and Excel
+        function handleDownloadConfirm(url) {
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'Download File?',
+                    text: 'Apakah Anda yakin ingin melanjutkan download?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Lanjut Download',
+                    cancelButtonText: 'Batalkan',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            } else {
+                if (confirm('Apakah Anda yakin ingin melanjutkan download?')) {
+                    window.location.href = url;
+                }
+            }
+        }
+        document.getElementById('downloadPdfBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            handleDownloadConfirm('/cetak-pdf');
+        });
+        document.getElementById('downloadExcelBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            handleDownloadConfirm('/cetak-excel');
+        });
     </script>
 </body>
 </html>
