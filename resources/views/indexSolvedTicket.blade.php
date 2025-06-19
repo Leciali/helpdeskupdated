@@ -124,8 +124,8 @@
                 <div class="flex items-center px-3 py-3 border-t border-blue-900" style="background-color: #003d7a;">
                     <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="asset/user.png"/>
                     <div class="ml-2 flex flex-col w-full overflow-hidden">
-                        <p class="text-xs font-semibold leading-tight truncate text-white">PT. Sejahtera Indonesia</p>
-                        <p class="text-xs text-blue-200 leading-tight truncate">sejahteracoorperation@gmail.com</p>
+                        <p class="text-xs font-semibold leading-tight truncate text-white">PT Pertagas Jakarta</p>
+                        <p class="text-xs text-blue-200 leading-tight truncate">Admin@pertagas.com</p>
                     </div>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                                 <th class="p-2">Ticket Number</th>
                                 <th class="p-2">Company</th>
                                 <th class="p-2">Description</th>
-                                <th class="p-2">Resolved Date</th>
+                                <th class="p-2">Solved Date</th>
                                 <th class="p-2">Actions</th>
                             </tr>
                         </thead>

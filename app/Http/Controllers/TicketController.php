@@ -18,15 +18,17 @@ class TicketController extends Controller
      */
     public function dashboardView()
     {
-        // Ambil semua tiket tanpa filter status
-        $tickets = Ticket::orderBy('created_at', 'desc')
-            ->paginate(10);
-        
-        // Log untuk debugging
-        Log::info('Dashboard View - Tickets Count: ' . $tickets->count());
-        
+        $sort = request('sort', 'created_at');
+        $order = request('order', 'desc');
+        $allowedSorts = ['ticket_number', 'company_name', 'description', 'status', 'priority', 'due_date', 'created_at'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'created_at';
+        }
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'desc';
+        }
+        $tickets = Ticket::orderBy($sort, $order)->paginate(10);
         $statistics = Ticket::getTicketStatistics();
-        
         return view('indexDashboard', compact('tickets', 'statistics'));
     }
 
@@ -78,11 +80,12 @@ class TicketController extends Controller
     /**
      * Menampilkan halaman laporan
      */
-    public function reportView()
+    public function reportView(Request $request)
     {
-        $statistics = Ticket::getTicketStatistics();
-        
-        return view('indexReport', compact('statistics'));
+        $range = $request->input('range', 7); // default 7 hari
+        $statistics = Ticket::getTicketStatistics($range);
+        $recentTickets = Ticket::orderBy('created_at', 'desc')->take(10)->get();
+        return view('indexReport', compact('statistics', 'recentTickets', 'range'));
     }
 
     /**
@@ -101,9 +104,9 @@ class TicketController extends Controller
         $validator = Validator::make($request->all(), [
             'company_email' => 'required|email',
             'company_name' => 'required|string|max:255',
+            'asset_name' => 'required|string|max:255',
+            'asset_series' => 'required|string|max:255',
             'description' => 'required|string',
-            'asset_name' => 'nullable|string|max:255',
-            'asset_series' => 'nullable|string|max:255',
             'priority' => 'required|in:low,medium,high,critical',
             'ticket_duration' => 'required|integer|min:1|max:30'
         ]);
@@ -126,10 +129,10 @@ class TicketController extends Controller
             $ticket->asset_name = $request->input('asset_name');
             $ticket->asset_series = $request->input('asset_series');
             $ticket->priority = $request->input('priority');
-            $ticket->ticket_duration = $ticketDuration; // Menggunakan nilai yang sudah dikonversi
-            $ticket->status = 'open'; // Status awal adalah 'open'
+            $ticket->ticket_duration = $ticketDuration;
+            $ticket->status = 'open';
             $ticket->start_date = Carbon::now();
-            $ticket->due_date = Carbon::now()->addDays($ticketDuration); // Menggunakan nilai yang sudah dikonversi
+            $ticket->due_date = Carbon::now()->addDays($ticketDuration);
             $ticket->save();
 
             // Log untuk debugging
@@ -229,5 +232,14 @@ public function show(Ticket $ticket)
         $timestamp = Carbon::now()->format('Ymd_His');
         return Excel::download(new TicketExport, 'laporan-pengguna-' . $timestamp . '.xlsx');
 
+    }
+
+    /**
+     * Menghapus tiket
+     */
+    public function destroy(Ticket $ticket)
+    {
+        $ticket->delete();
+        return redirect()->route('user.dashboard')->with('success', 'Tiket berhasil dihapus.');
     }
 }

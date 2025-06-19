@@ -124,8 +124,8 @@
                 <div class="flex items-center px-3 py-3 border-t border-blue-900" style="background-color: #003d7a;">
                     <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="asset/user.png"/>
                     <div class="ml-2 flex flex-col w-full overflow-hidden">
-                        <p class="text-xs font-semibold leading-tight truncate text-white">PT. Sejahtera Indonesia</p>
-                        <p class="text-xs text-blue-200 leading-tight truncate">sejahteracoorperation@gmail.com</p>
+                        <p class="text-xs font-semibold leading-tight truncate text-white">PT Pertagas Jakarta</p>
+                        <p class="text-xs text-blue-200 leading-tight truncate">Admin@pertagas.com</p>
                     </div>
                 </div>
             </div>
@@ -160,12 +160,12 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-gray-200">
-                                        <th class="p-2">Ticket Number</th>
-                                        <th class="p-2">Company</th>
-                                        <th class="p-2">Description</th>
-                                        <th class="p-2">Priority</th>
-                                        <th class="p-2">Due Date</th>
-                                        <th class="p-2">Actions</th>
+                                        <th class="p-2 text-center">Ticket Number</th>
+                                        <th class="p-2 text-center">Company</th>
+                                        <th class="p-2 text-center">Description</th>
+                                        <th class="p-2 text-center">Priority</th>
+                                        <th class="p-2 text-center">Due Date</th>
+                                        <th class="p-2 text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -174,7 +174,7 @@
                                             <td class="p-2">{{ $ticket->ticket_number }}</td>
                                             <td class="p-2">{{ $ticket->company_name }}</td>
                                             <td class="p-2">{{ \Illuminate\Support\Str::limit($ticket->description, 50) }}</td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                                 <span class="
                                                     @if($ticket->priority == 'low') text-green-600
                                                     @elseif($ticket->priority == 'medium') text-yellow-600
@@ -185,10 +185,10 @@
                                                     {{ ucfirst($ticket->priority) }}
                                                 </span>
                                             </td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                                 {{ $ticket->due_date ? (is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('d/m/Y')) : 'N/A' }}
                                             </td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                                 <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
                                                     View Details
                                                 </button>

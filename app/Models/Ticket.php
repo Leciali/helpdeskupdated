@@ -102,7 +102,7 @@ class Ticket extends Model
     /**
      * Calculate ticket lifecycle statistics
      */
-    public static function getTicketStatistics()
+    public static function getTicketStatistics($range = 7)
     {
         return [
             'total_tickets' => self::count(),
@@ -116,23 +116,35 @@ class Ticket extends Model
                 'high' => self::where('priority', 'high')->count(),
                 'critical' => self::where('priority', 'critical')->count(),
             ],
-            'weekly_trend' => self::getWeeklyTicketTrend()
+            'weekly_trend' => self::getWeeklyTicketTrend($range)
         ];
     }
 
     /**
      * Get weekly ticket trend
      */
-    private static function getWeeklyTicketTrend()
+    private static function getWeeklyTicketTrend($range = 7)
     {
         $endDate = Carbon::now();
-        $startDate = $endDate->copy()->subDays(6);
+        $startDate = $endDate->copy()->subDays($range - 1);
 
         $trend = [];
         for ($date = $startDate; $date <= $endDate; $date->addDay()) {
             $dateString = $date->format('Y-m-d');
             $trend[$dateString] = [
                 'open' => self::whereDate('created_at', $dateString)->open()->count(),
+                'pending' => self::where(function($q) use ($dateString) {
+                    $q->whereDate('created_at', '<=', $dateString)
+                      ->where(function($q2) use ($dateString) {
+                          $q2->whereNull('resolved_date')->orWhereDate('resolved_date', '>', $dateString);
+                      });
+                })->where('status', 'pending')->count(),
+                'in_progress' => self::where(function($q) use ($dateString) {
+                    $q->whereDate('created_at', '<=', $dateString)
+                      ->where(function($q2) use ($dateString) {
+                          $q2->whereNull('resolved_date')->orWhereDate('resolved_date', '>', $dateString);
+                      });
+                })->where('status', 'in_progress')->count(),
                 'solved' => self::whereDate('resolved_date', $dateString)->solved()->count()
             ];
         }

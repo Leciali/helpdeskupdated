@@ -13,19 +13,25 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Hapus semua data user lama
+        \DB::table('users')->truncate();
+
         $userData = [
+            [
+                'name' => 'Admin Pertagas',
+                'email' => 'Admin@pertagas.com',
+                'password' => bcrypt('123Pertagas'),
+            ],
             [
                 'name' => 'userpertamina1',
                 'email' => 'user@gmail.com',
                 'password' => bcrypt('123'),
             ],
-
             [
                 'name' => 'usertes',
                 'email' => 'tes@gmail.com',
                 'password' => bcrypt('123'),
             ],
-
             [
                 'name' => 'monitor',
                 'email' => 'monitor@gmail.com',

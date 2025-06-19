@@ -124,8 +124,8 @@
                 <div class="flex items-center px-3 py-3 border-t border-blue-900" style="background-color: #003d7a;">
                     <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="asset/user.png"/>
                     <div class="ml-2 flex flex-col w-full overflow-hidden">
-                        <p class="text-xs font-semibold leading-tight truncate text-white">PT. Sejahtera Indonesia</p>
-                        <p class="text-xs text-blue-200 leading-tight truncate">sejahteracoorperation@gmail.com</p>
+                        <p class="text-xs font-semibold leading-tight truncate text-white">PT Pertagas Jakarta</p>
+                        <p class="text-xs text-blue-200 leading-tight truncate">Admin@pertagas.com</p>
                     </div>
                 </div>
             </div>
@@ -169,12 +169,12 @@
                         <input type="text" name="company_name" value="{{ old('company_name') }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Asset Name</label>
-                        <input type="text" name="asset_name" value="{{ old('asset_name') }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                        <label class="block text-sm font-medium text-gray-700">Asset Name *</label>
+                        <input type="text" name="asset_name" value="{{ old('asset_name') }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Asset Series</label>
-                        <input type="text" name="asset_series" value="{{ old('asset_series') }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                        <label class="block text-sm font-medium text-gray-700">Asset Series *</label>
+                        <input type="text" name="asset_series" value="{{ old('asset_series') }}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700">Description *</label>
