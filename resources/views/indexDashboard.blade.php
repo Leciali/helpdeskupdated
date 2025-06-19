@@ -6,6 +6,7 @@
     <title>All Tickets</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* CSS untuk animasi sidebar */
         .sidebar {
@@ -122,10 +123,10 @@
                 
                 <!-- PROFIL -->
                 <div class="flex items-center px-3 py-3 border-t border-blue-900" style="background-color: #003d7a;">
-                    <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="asset/user.png"/>
+                    <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="{{ Auth::user()->profile_photo ? asset(Auth::user()->profile_photo) : asset('asset/user.png') }}"/>
                     <div class="ml-2 flex flex-col w-full overflow-hidden">
-                        <p class="text-xs font-semibold leading-tight truncate text-white">PT. Sejahtera Indonesia</p>
-                        <p class="text-xs text-blue-200 leading-tight truncate">sejahteracoorperation@gmail.com</p>
+                        <a href="{{ route('profile.edit') }}" class="block text-xs font-semibold leading-tight truncate text-white hover:underline">PT Pertagas Jakarta</a>
+                        <p class="text-xs text-blue-200 leading-tight truncate">Admin@pertagas.com</p>
                     </div>
                 </div>
             </div>
@@ -172,13 +173,67 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-gray-200">
-                                        <th class="p-2">Ticket Number</th>
-                                        <th class="p-2">Company</th>
-                                        <th class="p-2">Description</th>
-                                        <th class="p-2">Status</th>
-                                        <th class="p-2">Priority</th>
-                                        <th class="p-2">Due Date</th>
-                                        <th class="p-2">Actions</th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=ticket_number&order={{ request('sort') == 'ticket_number' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Ticket Number
+                                                @if(request('sort') == 'ticket_number')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=company_name&order={{ request('sort') == 'company_name' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Company
+                                                @if(request('sort') == 'company_name')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=description&order={{ request('sort') == 'description' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Description
+                                                @if(request('sort') == 'description')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=status&order={{ request('sort') == 'status' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Status
+                                                @if(request('sort') == 'status')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=priority&order={{ request('sort') == 'priority' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Priority
+                                                @if(request('sort') == 'priority')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">
+                                            <a href="?sort=due_date&order={{ request('sort') == 'due_date' && request('order') == 'asc' ? 'desc' : 'asc' }}">
+                                                Due Date
+                                                @if(request('sort') == 'due_date')
+                                                    <i class="fas fa-sort-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i>
+                                                @else
+                                                    <i class="fas fa-sort"></i>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="p-2 text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,7 +242,7 @@
                                             <td class="p-2">{{ $ticket->ticket_number }}</td>
                                             <td class="p-2">{{ $ticket->company_name }}</td>
                                             <td class="p-2">{{ \Illuminate\Support\Str::limit($ticket->description, 50) }}</td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                                 <span class="px-2 py-1 rounded text-xs
                                                     @if($ticket->status == 'open') bg-blue-100 text-blue-800
                                                     @elseif($ticket->status == 'pending') bg-yellow-100 text-yellow-800
@@ -200,7 +255,7 @@
                                                     {{ ucfirst($ticket->status) }}
                                                 </span>
                                             </td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                                 <span class="
                                                     @if($ticket->priority == 'low') text-green-600
                                                     @elseif($ticket->priority == 'medium') text-yellow-600
@@ -211,9 +266,9 @@
                                                     {{ ucfirst($ticket->priority) }}
                                                 </span>
                                             </td>
-                                            <td class="p-2">
+                                            <td class="p-2 text-center">
                                             @if($ticket->due_date)
-                                                <div class="flex items-center space-x-2">
+                                                    <div class="flex items-center space-x-2 justify-center">
                                                 <div class="bg-gray-100 text-gray-800 text-sm font-semibold px-3 py-1 rounded shadow-sm countdown" 
                                                     data-due-date="{{ is_string($ticket->due_date) ? $ticket->due_date : $ticket->due_date->format('Y-m-d H:i:s') }}">
                                                     Loading...
@@ -225,8 +280,15 @@
                                             </td>
                                             <td class="p-2">
                                                 <button onclick="openTicketModal({{ $ticket->id }})" class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
-                                                    View Details
+                                                    Details
                                                 </button>
+                                                <form action="{{ route('tickets.destroy', $ticket->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus tiket ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" onclick="confirmDelete(this)" class="bg-red-500 text-white px-2 py-1 text-xs rounded hover:bg-red-600 ml-2">
+                                                        Delete
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -654,6 +716,24 @@
 
         setInterval(updateCountdown, 1000);
         updateCountdown();
+
+        function confirmDelete(btn) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cari form terdekat dan submit
+                    btn.closest('form').submit();
+                }
+            });
+        }
     </script>
 </body>
 </html>

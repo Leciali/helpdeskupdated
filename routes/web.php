@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ProfileController;
 
 Route::middleware(["guest"])->group(function () {
     Route::get("/", [SessionController::class, "loginpage"])->name('loginpage');
@@ -32,7 +33,13 @@ Route::middleware(["auth"])->group(function () {
     Route::get('/cetak-pdf', [TicketController::class, 'ExportPdf']);
     Route::get('/cetak-excel', [TicketController::class, 'ExportExcel']);
 
+    // Route untuk delete tiket
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
 
     // Route logout
     Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
+
+    // Route untuk edit dan update profile user
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });

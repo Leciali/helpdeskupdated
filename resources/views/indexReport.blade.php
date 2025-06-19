@@ -189,8 +189,8 @@
                 <div class="flex items-center px-3 py-3 border-t border-blue-900" style="background-color: #003d7a;">
                     <img class="rounded-full h-8 w-8 flex-shrink-0 border border-white" src="asset/user.png"/>
                     <div class="ml-2 flex flex-col w-full overflow-hidden">
-                        <p class="text-xs font-semibold leading-tight truncate text-white">PT. Sejahtera Indonesia</p>
-                        <p class="text-xs text-blue-200 leading-tight truncate">sejahteracoorperation@gmail.com</p>
+                        <p class="text-xs font-semibold leading-tight truncate text-white">PT Pertagas Jakarta</p>
+                        <p class="text-xs text-blue-200 leading-tight truncate">Admin@pertagas.com</p>
                     </div>
                 </div>
             </div>
@@ -208,12 +208,12 @@
                 <div class="flex items-center space-x-4">
                     <!-- Date range selector -->
                     <div class="flex items-center">
-                        <select id="dateRange" class="text-sm border border-gray-300 rounded px-2 py-1">
-                            <option value="7">Last 7 days</option>
-                            <option value="30">Last 30 days</option>
-                            <option value="90">Last 90 days</option>
-                            <option value="180">Last 180 days</option>
-                            <option value="365">Last year</option>
+                        <select id="dateRange" class="text-sm border border-gray-300 rounded px-2 py-1" onchange="window.location='?range='+this.value">
+                            <option value="7" {{ (isset($range) && $range==7) ? 'selected' : '' }}>Last 7 days</option>
+                            <option value="30" {{ (isset($range) && $range==30) ? 'selected' : '' }}>Last 30 days</option>
+                            <option value="90" {{ (isset($range) && $range==90) ? 'selected' : '' }}>Last 90 days</option>
+                            <option value="180" {{ (isset($range) && $range==180) ? 'selected' : '' }}>Last 180 days</option>
+                            <option value="365" {{ (isset($range) && $range==365) ? 'selected' : '' }}>Last year</option>
                         </select>
                     </div>
                     
@@ -455,66 +455,34 @@
                                 
                                 <div class="timeline-container pl-8 space-y-4">
                                     <div class="timeline-line"></div>
-                                    
-                                    <!-- Activity 1 -->
+                                    @foreach(
+                                        $recentTickets as $ticket)
                                     <div class="timeline-item pb-4">
                                         <div class="timeline-icon">
-                                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                                <i class="fas fa-plus-circle text-blue-500 text-xs"></i>
                                         </div>
                                         <div class="bg-gray-50 p-3 rounded-lg">
                                             <div class="flex justify-between items-start">
-                                                <h4 class="text-sm font-medium">Ticket Resolved</h4>
-                                                <span class="text-xs text-gray-500">10 min ago</span>
+                                                    <h4 class="text-sm font-medium">
+                                                        {{ $ticket->status == 'solved' ? 'Ticket Resolved' : ($ticket->status == 'pending' ? 'Status Update' : 'New Ticket Created') }}
+                                                    </h4>
+                                                    <span class="text-xs text-gray-500">{{ $ticket->created_at->diffForHumans() }}</span>
                                             </div>
                                             <p class="text-xs text-gray-500 mt-1">
-                                                <span class="font-medium">T - 00000000023</span> - Network connectivity issue at Building A
+                                                    <span class="font-medium">{{ $ticket->ticket_number }}</span> - {{ $ticket->title }}
+                                                </p>
+                                                @if($ticket->title)
+                                                <p class="text-xs text-gray-700 mt-1">
+                                                    <span class="font-semibold">Title:</span> {{ $ticket->title }}
                                             </p>
+                                                @endif
                                             <div class="flex items-center mt-2">
-                                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Asset: Router-B23</span>
-                                                <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded ml-2">Medium</span>
+                                                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Asset: {{ $ticket->asset_name }}</span>
+                                                    <span class="text-xs bg-{{ $ticket->priority == 'critical' ? 'red' : ($ticket->priority == 'medium' ? 'yellow' : ($ticket->priority == 'high' ? 'orange' : 'green')) }}-100 text-{{ $ticket->priority == 'critical' ? 'red' : ($ticket->priority == 'medium' ? 'yellow' : ($ticket->priority == 'high' ? 'orange' : 'green')) }}-800 px-2 py-0.5 rounded ml-2">{{ ucfirst($ticket->priority) }}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <!-- Activity 2 -->
-                                    <div class="timeline-item pb-4">
-                                        <div class="timeline-icon">
-                                            <i class="fas fa-clock text-yellow-500 text-xs"></i>
-                                        </div>
-                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                            <div class="flex justify-between items-start">
-                                                <h4 class="text-sm font-medium">Status Update</h4>
-                                                <span class="text-xs text-gray-500">1 hour ago</span>
-                                            </div>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <span class="font-medium">T - 00000000019</span> - Server maintenance completed, monitoring for stability
-                                            </p>
-                                            <div class="flex items-center mt-2">
-                                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Asset: Server-DC1</span>
-                                                <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded ml-2">Critical</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Activity 3 -->
-                                    <div class="timeline-item pb-4">
-                                        <div class="timeline-icon">
-                                            <i class="fas fa-plus-circle text-blue-500 text-xs"></i>
-                                        </div>
-                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                            <div class="flex justify-between items-start">
-                                                <h4 class="text-sm font-medium">New Ticket Created</h4>
-                                                <span class="text-xs text-gray-500">3 hours ago</span>
-                                            </div>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <span class="font-medium">T - 00000000027</span> - Software license renewal request
-                                            </p>
-                                            <div class="flex items-center mt-2">
-                                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Asset: CAD Software</span>
-                                                <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded ml-2">Low</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                             
@@ -1223,6 +1191,8 @@
             const labels = Object.keys(weeklyTrend);
             const openData = labels.map(date => weeklyTrend[date].open);
             const solvedData = labels.map(date => weeklyTrend[date].solved);
+            const pendingData = labels.map(date => weeklyTrend[date].pending);
+            const inProgressData = labels.map(date => weeklyTrend[date].in_progress);
 
             new Chart(ctx, {
                 type: 'line',
@@ -1234,6 +1204,22 @@
                             data: openData,
                             borderColor: '#1976d2',
                             backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Pending Tickets',
+                            data: pendingData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'In Progress Tickets',
+                            data: inProgressData,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
                             tension: 0.4,
                             fill: true
                         },
